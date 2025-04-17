@@ -76,7 +76,25 @@ Follow these steps to set up the project locally.
 
 ## 📁 Project Structure
 
-study_helper/│├── app.py              # Main Flask application logic├── physics.txt         # Data file containing physics topics and units├── requirements.txt    # Python package dependencies├── .env                # Environment variables (contains API key - not committed)├── templates/          # HTML templates for the web interface│   ├── index.html      # Main page template│   └── ...             # Other necessary templates│├── static/             # Static files (CSS, JavaScript, Images)│   ├── css/│   │   └── style.css   # Custom CSS styles│   ├── js/│   │   └── script.js   # Custom JavaScript│   └── images/         # Application images/icons│├── venv/               # Virtual environment directory (not committed)└── README.md           # This file
+study_helper/
+│
+├── app.py              # Main Flask application logic
+├── physics.txt         # Data file containing physics topics and units
+├── requirements.txt    # Python package dependencies
+├── .env                # Environment variables (contains API key - not committed)
+├── templates/          # HTML templates for the web interface
+│   ├── index.html      # Main page template
+│   └── ...             # Other necessary templates
+│
+├── static/             # Static files (CSS, JavaScript, Images)
+│   ├── css/
+│   │   └── style.css   # Custom CSS styles
+│   ├── js/
+│   │   └── script.js   # Custom JavaScript
+│   └── images/         # Application images/icons
+│
+├── venv/               # Virtual environment directory (not committed)
+└── README.md           # This file
 ## 📖 Usage
 
 1.  Navigate to the application in your browser.
