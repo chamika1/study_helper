@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Practice Questions - A/L Physics Learning Assistant</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background-color: #3498db;
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .sidebar {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        .content {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            padding: 10px;
+            color: #6c757d;
+        }
+        .loading {
+            text-align: center;
+            display: none;
+            margin: 20px 0;
+        }
+        .question-card {
+            margin-bottom: 20px;
+            border: 1px solid #dee2e6;
+            border-radius: 10px;
+            padding: 15px;
+        }
+        .feedback {
+            margin-top: 10px;
+            display: none;
+        }
+        .answer-section {
+            margin-top: 15px;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            display: none;
+        }
+        .nav-tabs .nav-link {
+            border-radius: 10px 10px 0 0;
+        }
+        .nav-tabs .nav-link.active {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="bi bi-pencil-square"></i> Practice Questions</h1>
+            <p>Test your knowledge with AI-generated practice questions</p>
+            <div class="mt-3">
+                <a href="/" class="btn btn-light me-2"><i class="bi bi-house-door"></i> Home</a>
+                <a href="/practice" class="btn btn-light active"><i class="bi bi-pencil-square"></i> Practice Questions</a>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-12">
+                <div class="sidebar">
+                    <h3>Generate Practice Questions</h3>
+                    <form id="questionForm">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="unit" class="form-label">Select Unit</label>
+                                    <select class="form-select" id="unit" name="unit" required>
+                                        <option value="" selected disabled>Choose a unit</option>
+                                        {% for unit in units %}
+                                        <option value="{{ unit }}">{{ unit }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="topic" class="form-label">Select Topic</label>
+                                    <select class="form-select" id="topic" name="topic" disabled>
+                                        <option value="" selected disabled>Choose a unit first</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label">Question Type</label>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="questionType" id="mcqType" value="MCQ" checked>
+                                        <label class="form-check-label" for="mcqType">
+                                            Multiple Choice Questions
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="questionType" id="structuredType" value="Structured">
+                                        <label class="form-check-label" for="structuredType">
+                                            Structured Questions
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="questionType" id="essayType" value="Essay">
+                                        <label class="form-check-label" for="essayType">
+                                            Essay Questions
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="difficulty" class="form-label">Difficulty Level</label>
+                                    <select class="form-select" id="difficulty" name="difficulty">
+                                        <option value="Easy">Easy</option>
+                                        <option value="Medium" selected>Medium</option>
+                                        <option value="Hard">Hard</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="numQuestions" class="form-label">Number of Questions</label>
+                                    <select class="form-select" id="numQuestions" name="num_questions">
+                                        <option value="1">1</option>
+                                        <option value="3" selected>3</option>
+                                        <option value="5">5</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="language" class="form-label">Language</label>
+                                    <select class="form-select" id="language" name="language">
+                                        {% for language in languages %}
+                                        <option value="{{ language }}">{{ language }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="text-center">
+                            <button type="button" class="btn btn-primary" id="generateQuestionsBtn">
+                                <i class="bi bi-lightning-charge"></i> Generate Questions
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                
+                <div class="content">
+                    <ul class="nav nav-tabs" id="questionTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="questions-tab" data-bs-toggle="tab" data-bs-target="#questions" type="button" role="tab" aria-controls="questions" aria-selected="true">Questions</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="results-tab" data-bs-toggle="tab" data-bs-target="#results" type="button" role="tab" aria-controls="results" aria-selected="false">Results</button>
+                        </li>
+                    </ul>
+                    
+                    <div class="tab-content" id="questionTabsContent">
+                        <div class="tab-pane fade show active" id="questions" role="tabpanel" aria-labelledby="questions-tab">
+                            <div class="loading" id="questionsLoading">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                                <p>Generating questions...</p>
+                            </div>
+                            
+                            <div id="questionsContainer">
+                                <div class="text-center my-5">
+                                    <p class="lead">Select options above and click "Generate Questions" to start practicing.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="text-center mt-4" id="submitButtonContainer" style="display: none;">
+                                <button type="button" class="btn btn-success" id="submitAnswersBtn">
+                                    <i class="bi bi-check-circle"></i> Submit Answers
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="tab-pane fade" id="results" role="tabpanel" aria-labelledby="results-tab">
+                            <div id="resultsContainer">
+                                <!-- Results will be displayed here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>This app is designed to help Sri Lankan A/L students with Physics using AI.</p>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // DOM elements
+            const unitSelect = document.getElementById('unit');
+            const topicSelect = document.getElementById('topic');
+            const generateQuestionsBtn = document.getElementById('generateQuestionsBtn');
+            const questionsLoading = document.getElementById('questionsLoading');
+            const questionsContainer = document.getElementById('questionsContainer');
+            const submitButtonContainer = document.getElementById('submitButtonContainer');
+            const submitAnswersBtn = document.getElementById('submitAnswersBtn');
+            const resultsContainer = document.getElementById('resultsContainer');
+            const questionTabs = document.getElementById('questionTabs');
+            const resultTab = document.getElementById('results-tab');
+            
+            // Store generated questions
+            let generatedQuestions = [];
+            
+            // Load topics when unit is selected
+            unitSelect.addEventListener('change', function() {
+                const unit = this.value;
+                
+                // Reset topic select
+                topicSelect.innerHTML = '<option value="" selected disabled>Loading topics...</option>';
+                topicSelect.disabled = true;
+                
+                // Fetch topics for the selected unit
+                fetch('/get_topics', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams({
+                        'unit': unit
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Clear and populate topic select
+                    topicSelect.innerHTML = '';
+                    
+                    // Add "All Topics" option
+                    const allOption = document.createElement('option');
+                    allOption.value = "All Topics";
+                    allOption.textContent = "All Topics";
+                    topicSelect.appendChild(allOption);
+                    
+                    // Add individual topics
+                    data.topics.forEach(topic => {
+                        const option = document.createElement('option');
+                        option.value = topic;
+                        option.textContent = topic;
+                        topicSelect.appendChild(option);
+                    });
+                    
+                    // Enable topic select
+                    topicSelect.disabled = false;
+                })
+                .catch(error => {
+                    console.error('Error fetching topics:', error);
+                    topicSelect.innerHTML = '<option value="" selected disabled>Error loading topics</option>';
+                });
+            });
+            
+            // Generate questions button
+            // Update the question generation section to better handle structured questions
+            // In the generateQuestionsBtn event listener
+            generateQuestionsBtn.addEventListener('click', function() {
+                const unit = unitSelect.value;
+                const topic = topicSelect.value || "All Topics";
+                const questionType = document.querySelector('input[name="questionType"]:checked').value;
+                const difficulty = document.getElementById('difficulty').value;
+                const numQuestions = document.getElementById('numQuestions').value;
+                const language = document.getElementById('language').value;
+                
+                if (!unit) {
+                    alert('Please select a unit');
+                    return;
+                }
+                
+                // Show loading
+                questionsLoading.style.display = 'block';
+                questionsContainer.innerHTML = '';
+                submitButtonContainer.style.display = 'none';
+                
+                // Switch to questions tab
+                const questionsTabEl = new bootstrap.Tab(document.getElementById('questions-tab'));
+                questionsTabEl.show();
+                
+                // Send request to generate questions
+                fetch('/generate_questions', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams({
+                        'unit': unit,
+                        'topic': topic,
+                        'question_type': questionType,
+                        'difficulty': difficulty,
+                        'num_questions': numQuestions,
+                        'language': language
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Hide loading
+                    questionsLoading.style.display = 'none';
+                    
+                    if (data.error) {
+                        questionsContainer.innerHTML = `
+                            <div class="alert alert-danger">
+                                <h4>Error Generating Questions</h4>
+                                <p>${data.error}</p>
+                            </div>
+                        `;
+                        if (data.raw_response) {
+                            questionsContainer.innerHTML += `
+                                <div class="card mt-3">
+                                    <div class="card-header">Raw Response</div>
+                                    <div class="card-body">
+                                        <pre>${JSON.stringify(data.raw_response, null, 2)}</pre>
+                                    </div>
+                                </div>
+                            `;
+                        }
+                        return;
+                    }
+                    
+                    if (!data.questions || data.questions.length === 0) {
+                        questionsContainer.innerHTML = `
+                            <div class="alert alert-warning">
+                                <h4>No Questions Generated</h4>
+                                <p>Try different parameters or try again later.</p>
+                            </div>
+                        `;
+                        return;
+                    }
+                    
+                    // Store generated questions
+                    generatedQuestions = data.questions;
+                    
+                    // Display questions
+                    questionsContainer.innerHTML = '';
+                    
+                    // Make sure to include language in the form data
+                    const formData = new FormData();
+                    formData.append('unit', unit);
+                    formData.append('topic', topic);
+                    formData.append('question_type', questionType);
+                    formData.append('difficulty', difficulty);
+                    formData.append('num_questions', numQuestions);
+                    formData.append('language', language);  // Make sure this line is present
+                    
+                    // Create question elements
+                    generatedQuestions.forEach((question, index) => {
+                        const questionElement = document.createElement('div');
+                        questionElement.className = 'question-card';
+                        
+                        let questionContent = '';
+                        
+                        if (questionType === 'MCQ') {
+                            questionContent = `
+                                <h5>Question ${index + 1}</h5>
+                                <div class="mb-3">${marked.parse(question.question)}</div>
+                                
+                                <div class="mb-3">
+                                    ${question.options.map((option, optIndex) => `
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="q${index}" id="q${index}_${optIndex}" value="${optIndex}">
+                                            <label class="form-check-label" for="q${index}_${optIndex}">
+                                                ${marked.parse(option)}
+                                            </label>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                                
+                                <div class="feedback text-success" id="correct-feedback-${index}">
+                                    <i class="bi bi-check-circle"></i> Correct!
+                                    ${question.explanation ? `<div class="mt-2"><strong>Explanation:</strong> ${marked.parse(question.explanation)}</div>` : ''}
+                                </div>
+                                
+                                <div class="feedback text-danger" id="incorrect-feedback-${index}">
+                                    <i class="bi bi-x-circle"></i> Incorrect
+                                    <div class="mt-2"><strong>Correct Answer:</strong> ${marked.parse(question.options[question.correct_answer])}</div>
+                                    ${question.explanation ? `<div class="mt-2"><strong>Explanation:</strong> ${marked.parse(question.explanation)}</div>` : ''}
+                                </div>
+                            `;
+                        } else if (questionType === 'Structured') {
+                            // Structured questions with scenario/practical context
+                            questionContent = `
+                                <h5>Question ${index + 1}</h5>
+                                <div class="card mb-3 bg-light">
+                                    <div class="card-body">
+                                        <h6 class="card-subtitle mb-2 text-muted">Scenario:</h6>
+                                        <div class="mb-3">${marked.parse(question.scenario || question.question)}</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="sub-questions">
+                                    ${question.sub_questions ? question.sub_questions.map((subQ, subIndex) => `
+                                        <div class="card mb-2">
+                                            <div class="card-body">
+                                                <h6>${subIndex + 1}. ${marked.parse(subQ.question)}</h6>
+                                                <div class="mb-3">
+                                                    <textarea class="form-control" id="answer-${index}-${subIndex}" rows="3" 
+                                                        placeholder="Apply physics concepts to this part of the scenario..."></textarea>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    `).join('') : `
+                                        <div class="mb-3">
+                                            <label for="answer-${index}" class="form-label">Your Answer:</label>
+                                            <textarea class="form-control" id="answer-${index}" rows="5" 
+                                                placeholder="Answer all parts of this structured question..."></textarea>
+                                        </div>
+                                    `}
+                                </div>
+                                
+                                <button type="button" class="btn btn-outline-primary btn-sm btn-check-answer" data-index="${index}">
+                                    <i class="bi bi-eye"></i> View Model Answer
+                                </button>
+                                
+                                <div class="answer-section" id="answer-section-${index}">
+                                    <h6>Model Answer:</h6>
+                                    <div>${marked.parse(question.answer)}</div>
+                                </div>
+                            `;
+                        } else {
+                            // Essay questions (complex questions with calculations and thinking)
+                            questionContent = `
+                                <h5>Question ${index + 1}</h5>
+                                <div class="mb-3">${marked.parse(question.question)}</div>
+                                
+                                <div class="mb-3">
+                                    <label for="answer-${index}" class="form-label">Your Answer:</label>
+                                    <textarea class="form-control" id="answer-${index}" rows="8" 
+                                        placeholder="Provide a detailed explanation with calculations and reasoning..."></textarea>
+                                </div>
+                                
+                                <button type="button" class="btn btn-outline-primary btn-sm btn-check-answer" data-index="${index}">
+                                    <i class="bi bi-eye"></i> View Model Answer
+                                </button>
+                                
+                                <div class="answer-section" id="answer-section-${index}">
+                                    <h6>Model Answer:</h6>
+                                    <div>${marked.parse(question.answer)}</div>
+                                </div>
+                            `;
+                        }
+                        
+                        questionElement.innerHTML = questionContent;
+                        questionsContainer.appendChild(questionElement);
+                    });
+                    
+                    // Add event listeners for check answer buttons
+                    document.querySelectorAll('.btn-check-answer').forEach(button => {
+                        button.addEventListener('click', function() {
+                            const index = this.getAttribute('data-index');
+                            document.getElementById(`answer-section-${index}`).style.display = 'block';
+                        });
+                    });
+                    
+                    // Show submit button for MCQs
+                    if (questionType === 'MCQ') {
+                        submitButtonContainer.style.display = 'block';
+                    }
+                })
+                .catch(error => {
+                    questionsLoading.style.display = 'none';
+                    questionsContainer.innerHTML = `
+                        <div class="alert alert-danger">
+                            <h4>Error</h4>
+                            <p>${error.message}</p>
+                        </div>
+                    `;
+                });
+            });
+            
+            // Helper function to get progress bar class based on percentage
+            function getProgressBarClass(percentage) {
+                if (percentage >= 80) return 'bg-success';
+                if (percentage >= 60) return 'bg-info';
+                if (percentage >= 40) return 'bg-warning';
+                return 'bg-danger';
+            }
+            
+            // Generate question summary for results
+            function generateQuestionSummary() {
+                let summary = '';
+                generatedQuestions.forEach((question, index) => {
+                    const questionType = document.querySelector('input[name="questionType"]:checked').value;
+                    
+                    if (questionType === 'MCQ') {
+                        const selectedOption = document.querySelector(`input[name="q${index}"]:checked`);
+                        const selectedValue = selectedOption ? parseInt(selectedOption.value) : -1;
+                        const isCorrect = selectedValue === question.correct_answer;
+                        
+                        summary += `
+                            <li class="list-group-item ${isCorrect ? 'list-group-item-success' : 'list-group-item-danger'}">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <strong>Question ${index + 1}:</strong> 
+                                        <span class="ms-2">${question.question.substring(0, 50)}${question.question.length > 50 ? '...' : ''}</span>
+                                    </div>
+                                    <span class="badge ${isCorrect ? 'bg-success' : 'bg-danger'} rounded-pill">
+                                        ${isCorrect ? 'Correct' : 'Incorrect'}
+                                    </span>
+                                </div>
+                                ${!isCorrect ? `
+                                <div class="mt-2">
+                                    <strong>Your answer:</strong> ${selectedValue >= 0 ? question.options[selectedValue] : 'Not answered'}
+                                </div>
+                                <div class="mt-1">
+                                    <strong>Correct answer:</strong> ${question.options[question.correct_answer]}
+                                </div>
+                                <div class="mt-1 text-muted">
+                                    <strong>Explanation:</strong> ${question.explanation || 'No explanation provided'}
+                                </div>
+                                ` : ''}
+                            </li>
+                        `;
+                    } else if (questionType === 'Structured') {
+                        // For structured questions, show the scenario title and sub-question count
+                        summary += `
+                            <li class="list-group-item">
+                                <strong>Structured Question ${index + 1}:</strong> 
+                                <span class="ms-2">${(question.scenario_title || question.question.substring(0, 50))}${question.question.length > 50 ? '...' : ''}</span>
+                                <div class="mt-2 small text-muted">
+                                    <em>Scenario-based question with ${question.sub_questions ? question.sub_questions.length : '5-10'} parts requiring application of physics concepts</em>
+                                </div>
+                            </li>
+                        `;
+                    } else {
+                        // For essay questions, show the complexity
+                        summary += `
+                            <li class="list-group-item">
+                                <strong>Essay Question ${index + 1}:</strong> 
+                                <span class="ms-2">${question.question.substring(0, 50)}${question.question.length > 50 ? '...' : ''}</span>
+                                <div class="mt-2 small text-muted">
+                                    <em>Complex question requiring calculations and critical thinking</em>
+                                </div>
+                            </li>
+                        `;
+                    }
+                });
+                return summary;
+            }
+            
+            // Submit answers button
+            submitAnswersBtn.addEventListener('click', function() {
+                const questionType = document.querySelector('input[name="questionType"]:checked').value;
+                
+                if (questionType === 'MCQ') {
+                    let score = 0;
+                    let totalQuestions = generatedQuestions.length;
+                    
+                    // Check each MCQ answer
+                    generatedQuestions.forEach((question, index) => {
+                        const selectedOption = document.querySelector(`input[name="q${index}"]:checked`);
+                        
+                        // Hide all feedback first
+                        document.getElementById(`correct-feedback-${index}`).style.display = 'none';
+                        document.getElementById(`incorrect-feedback-${index}`).style.display = 'none';
+                        
+                        if (selectedOption) {
+                            const selectedValue = parseInt(selectedOption.value);
+                            if (selectedValue === question.correct_answer) {
+                                score++;
+                                document.getElementById(`correct-feedback-${index}`).style.display = 'block';
+                            } else {
+                                document.getElementById(`incorrect-feedback-${index}`).style.display = 'block';
+                            }
+                        } else {
+                            document.getElementById(`incorrect-feedback-${index}`).style.display = 'block';
+                        }
+                    });
+                    
+                    // Display results
+                    const percentage = Math.round((score / totalQuestions) * 100);
+                    let resultMessage = '';
+                    
+                    if (percentage >= 80) {
+                        resultMessage = 'Excellent! You have a strong understanding of this topic.';
+                    } else if (percentage >= 60) {
+                        resultMessage = 'Good job! You have a good grasp of the material.';
+                    } else if (percentage >= 40) {
+                        resultMessage = 'You\'re making progress. Keep studying to improve your understanding.';
+                    } else {
+                        resultMessage = 'You need more practice with this topic. Don\'t give up!';
+                    }
+                    
+                    resultsContainer.innerHTML = `
+                        <div class="text-center mb-4">
+                            <h3>Your Score: ${score}/${totalQuestions} (${percentage}%)</h3>
+                            <p class="lead">${resultMessage}</p>
+                        </div>
+                        <div class="progress mb-4" style="height: 30px;">
+                            <div class="progress-bar ${getProgressBarClass(percentage)}" role="progressbar" 
+                                style="width: ${percentage}%;" aria-valuenow="${percentage}" aria-valuemin="0" aria-valuemax="100">
+                                ${percentage}%
+                            </div>
+                        </div>
+                        <div class="card mb-4">
+                            <div class="card-header bg-primary text-white">
+                                <h5 class="mb-0">Question Summary</h5>
+                            </div>
+                            <div class="card-body">
+                                <ul class="list-group">
+                                    ${generateQuestionSummary()}
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="text-center mt-4">
+                            <button type="button" class="btn btn-primary" onclick="document.getElementById('questions-tab').click()">
+                                <i class="bi bi-arrow-left"></i> Review Questions
+                            </button>
+                            <button type="button" class="btn btn-success" onclick="document.getElementById('generateQuestionsBtn').click()">
+                                <i class="bi bi-plus-circle"></i> Generate New Questions
+                            </button>
+                        </div>
+                    `;
+                    
+                    // Switch to results tab
+                    const resultsTabEl = new bootstrap.Tab(document.getElementById('results-tab'));
+                    resultsTabEl.show();
+                } else {
+                    // For structured and essay questions, just show a message
+                    resultsContainer.innerHTML = `
+                        <div class="alert alert-info">
+                            <h4>Self-Assessment</h4>
+                            <p>Compare your answers with the model answers provided for each question.</p>
+                        </div>
+                        <div class="card mb-4">
+                            <div class="card-header bg-primary text-white">
+                                <h5 class="mb-0">Question Summary</h5>
+                            </div>
+                            <div class="card-body">
+                                <ul class="list-group">
+                                    ${generateQuestionSummary()}
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="text-center mt-4">
+                            <button type="button" class="btn btn-primary" onclick="document.getElementById('questions-tab').click()">
+                                <i class="bi bi-arrow-left"></i> Review Questions
+                            </button>
+                        </div>
+                    `;
+                    
+                    // Switch to results tab
+                    const resultsTabEl = new bootstrap.Tab(document.getElementById('results-tab'));
+                    resultsTabEl.show();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

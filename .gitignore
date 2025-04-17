@@ -1,0 +1,12 @@
+.qodo
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.env
+.venv
+env/
+venv/
+ENV/
+.vercel
+.vercel

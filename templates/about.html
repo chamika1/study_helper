@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About - A/L Physics Learning Assistant</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background-color: #3498db;
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .content {
+            background-color: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            color: #666;
+        }
+        .social-links {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            margin: 25px 0;
+        }
+        .social-links a {
+            display: inline-flex;
+            align-items: center;
+            padding: 10px 15px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            color: #333;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .social-links a:hover {
+            background-color: #3498db;
+            color: white;
+            transform: translateY(-3px);
+        }
+        .social-links i {
+            margin-right: 8px;
+            font-size: 1.2rem;
+        }
+        .developer-info {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 30px;
+        }
+        .nav-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .support-button {
+            display: block;
+            margin: 30px auto;
+            max-width: 300px;
+            background-color: #FFDD00;
+            color: #000000;
+            font-weight: bold;
+            border: none;
+            border-radius: 10px;
+            padding: 12px 20px;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 221, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+        
+        .support-button:hover {
+            transform: translateY(-5px) scale(1.03);
+            box-shadow: 0 7px 20px rgba(255, 221, 0, 0.4);
+            color: #000000;
+        }
+        
+        .support-button:active {
+            transform: translateY(0) scale(0.98);
+        }
+        
+        .support-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transition: all 0.6s ease;
+            z-index: -1;
+        }
+        
+        .support-button:hover::before {
+            left: 100%;
+            animation: shine 1.5s infinite;
+        }
+        
+        .coffee-steam {
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+        
+        .support-button:hover .coffee-steam {
+            opacity: 1;
+            animation: steam 2s infinite;
+        }
+        
+        @keyframes shine {
+            0% {
+                left: -100%;
+            }
+            100% {
+                left: 100%;
+            }
+        }
+        
+        @keyframes steam {
+            0% {
+                opacity: 0;
+                transform: translateY(0) translateX(-50%) scale(1);
+            }
+            50% {
+                opacity: 0.7;
+                transform: translateY(-10px) translateX(-50%) scale(1.2);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-20px) translateX(-50%) scale(1);
+            }
+        }
+        
+        .coffee-icon {
+            display: inline-block;
+            margin-right: 8px;
+            animation: wiggle 2.5s infinite;
+        }
+        
+        @keyframes wiggle {
+            0%, 100% {
+                transform: rotate(0deg);
+            }
+            25% {
+                transform: rotate(-10deg);
+            }
+            75% {
+                transform: rotate(10deg);
+            }
+        }
+        @media (max-width: 768px) {
+            .header {
+                padding: 15px;
+            }
+            .nav-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            .nav-buttons .btn {
+                width: 100%;
+                margin-bottom: 5px;
+            }
+            .social-links {
+                flex-direction: column;
+                gap: 10px;
+            }
+            .social-links a {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="bi bi-info-circle"></i> About A/L Physics Learning Assistant</h1>
+            <p>Learn more about this application and its developer</p>
+            <div class="mt-3 nav-buttons">
+                <a href="/" class="btn btn-outline-light me-2 mb-2 mb-md-0">
+                    <i class="bi bi-house"></i> Home
+                </a>
+                <a href="/practice" class="btn btn-outline-light me-2 mb-2 mb-md-0">
+                    <i class="bi bi-journal-check"></i> Practice
+                </a>
+                <a href="/exam_tips" class="btn btn-outline-light me-2 mb-2 mb-md-0">
+                    <i class="bi bi-lightbulb"></i> Exam Tips
+                </a>
+                <a href="/study_plan" class="btn btn-outline-light me-2 mb-2 mb-md-0">
+                    <i class="bi bi-calendar-check"></i> Study Plan
+                </a>
+                <a href="/short_notes" class="btn btn-outline-light me-2 mb-2 mb-md-0">
+                    <i class="bi bi-card-text"></i> Short Notes
+                </a>
+            </div>
+        </div>
+        
+        <div class="content">
+            <h2 class="text-center mb-4">About This Project</h2>
+            <p class="lead">
+                The A/L Physics Learning Assistant is an AI-powered educational tool designed specifically for Sri Lankan Advanced Level students studying Physics. This application leverages artificial intelligence to provide personalized learning experiences, practice questions, exam tips, study plans, and concise notes.
+            </p>
+            
+            <div class="row mt-5">
+                <div class="col-md-6">
+                    <h3><i class="bi bi-stars"></i> Features</h3>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item"><i class="bi bi-check-circle-fill text-success"></i> Interactive learning with step-by-step explanations</li>
+                        <li class="list-group-item"><i class="bi bi-check-circle-fill text-success"></i> Practice questions with detailed solutions</li>
+                        <li class="list-group-item"><i class="bi bi-check-circle-fill text-success"></i> Strategic exam tips and techniques</li>
+                        <li class="list-group-item"><i class="bi bi-check-circle-fill text-success"></i> Customized study plans</li>
+                        <li class="list-group-item"><i class="bi bi-check-circle-fill text-success"></i> Concise revision notes</li>
+                        <li class="list-group-item"><i class="bi bi-check-circle-fill text-success"></i> Support for both English and Sinhala languages</li>
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    <h3><i class="bi bi-tools"></i> Technologies Used</h3>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item"><i class="bi bi-code-slash text-primary"></i> Python with Flask framework</li>
+                        <li class="list-group-item"><i class="bi bi-braces text-primary"></i> HTML, CSS, and JavaScript</li>
+                        <li class="list-group-item"><i class="bi bi-bootstrap text-primary"></i> Bootstrap for responsive design</li>
+                        <li class="list-group-item"><i class="bi bi-cpu text-primary"></i> Google Gemini AI for content generation</li>
+                        <li class="list-group-item"><i class="bi bi-cloud text-primary"></i> Deployed on cloud infrastructure</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="developer-info mt-5">
+                <h3 class="text-center mb-4"><i class="bi bi-person-circle"></i> Developer Information</h3>
+                <p class="text-center">
+                    This application was developed by Chamika, a passionate developer focused on creating educational tools to help students succeed in their academic journey.
+                </p>
+                
+                <h4 class="text-center mt-4">Connect with the Developer</h4>
+                <div class="social-links">
+                    <a href="https://itzmechami.wuaze.com/" target="_blank">
+                        <i class="bi bi-globe"></i> Personal Website
+                    </a>
+                    <a href="https://techbloglk.xyz/" target="_blank">
+                        <i class="bi bi-rss"></i> Tech Blog
+                    </a>
+                    <a href="https://t.me/study_helper_physics" target="_blank">
+                        <i class="bi bi-telegram"></i> Telegram
+                    </a>
+                    <a href="https://web.facebook.com/people/Techbloglk/61575108633834/" target="_blank">
+                        <i class="bi bi-facebook"></i> Facebook
+                    </a>
+                    <a href="https://github.com/chamika1" target="_blank">
+                        <i class="bi bi-github"></i> GitHub
+                    </a>
+                </div>
+                
+                <!-- Replace the existing Buy Me a Coffee button with this enhanced version -->
+                <a href="https://www.buymeacoffee.com/jLufrxRaO1" target="_blank" class="btn support-button">
+                    <span class="coffee-steam">~☁️~</span>
+                    <span class="coffee-icon"><i class="bi bi-cup-hot-fill"></i></span> 
+                    Buy Me a Coffee
+                </a>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>This app is designed to help Sri Lankan A/L students with Physics using AI.</p>
+            <p>&copy; 2024 A/L Physics Learning Assistant</p>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
