@@ -75,7 +75,7 @@ Follow these steps to set up the project locally.
     Open your web browser and navigate to `http://127.0.0.1:5000` or `http://localhost:5000`.
 
 ## 📁 Project Structure
-
+```
 study_helper/
 │
 ├── app.py              # Main Flask application logic
@@ -95,6 +95,7 @@ study_helper/
 │
 ├── venv/               # Virtual environment directory (not committed)
 └── README.md           # This file
+```
 ## 📖 Usage
 
 1.  Navigate to the application in your browser.
