@@ -10,11 +10,11 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Configure the Gemini API
-API_KEY = os.getenv("GEMINI_API_KEY", "AIzaSyBXFItOoj7tTCR7463Si4BD1STgR61Njzc")  # Using the provided API key with fallback
+API_KEY = os.getenv("GEMINI_API_KEY", "#API-KEY")  # Using the provided API key with fallback
 API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent"  # Using gemini-2.5-flash model
 
 # Configure GetImg.ai API for image generation
-GETIMG_API_KEY = os.getenv("GETIMG_API_KEY", "key-3XbWkFO34FVCQUnJQ6A3qr702Eu7DDR1dqoJOyhMHqhruEhs22KUzR7w631ZFiA5OFZIba7i44qDQEMpKxzegOUm83vCfILb")
+GETIMG_API_KEY = os.getenv("GETIMG_API_KEY", "#IMGKEY")
 GETIMG_API_URL = "https://api.getimg.ai/v1/stable-diffusion-xl/text-to-image"
 AVAILABLE_IMAGE_MODELS = ["stable-diffusion-xl-v1-0", "realistic-vision-v5-1", "dreamshaper-8", "anything-v5", "openjourney-v4", "realvis-xl-v4"]
 DEFAULT_IMAGE_MODEL = "stable-diffusion-xl-v1-0"
