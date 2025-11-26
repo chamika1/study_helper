@@ -1,0 +1,22 @@
+/* Image styling for better display */
+img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 15px auto;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+/* Specific styling for message content images */
+.message-content img {
+    max-width: 90%;
+    margin: 10px auto;
+}
+
+/* For smaller screens */
+@media (max-width: 768px) {
+    img {
+        max-width: 95%;
+    }
+}

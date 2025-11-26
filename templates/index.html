@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A/L Physics Learning Assistant</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
+    
+    <!-- MathJax for rendering mathematical formulas -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            },
+            svg: {
+                fontCache: 'global'
+            }
+        };
+    </script>
+    
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background-color: #3498db;
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .sidebar {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px; /* Added margin for mobile stacking */
+        }
+        .content {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            padding: 10px;
+            color: #6c757d;
+        }
+        .response-area {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            white-space: pre-wrap;
+        }
+        .loading {
+            text-align: center;
+            display: none;
+            margin: 20px 0;
+        }
+        .spinner-border {
+            width: 3rem;
+            height: 3rem;
+        }
+        
+        /* Chat interface styles */
+        .chat-container {
+            height: 400px;
+            overflow-y: auto;
+            border: 1px solid #dee2e6;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            background-color: #f8f9fa;
+        }
+        
+        .chat-message {
+            margin-bottom: 15px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .user-message .message-content {
+            align-self: flex-end;
+            background-color: #3498db;
+            color: white;
+            border-radius: 15px 15px 0 15px;
+            padding: 10px 15px;
+            max-width: 80%;
+            margin-left: auto;
+        }
+        
+        .bot-message .message-content {
+            align-self: flex-start;
+            background-color: #e9ecef;
+            border-radius: 15px 15px 15px 0;
+            padding: 10px 15px;
+            max-width: 80%;
+        }
+        
+        .system-message {
+            text-align: center;
+            margin: 10px 0;
+            color: #6c757d;
+            font-style: italic;
+        }
+        
+        .chat-input-container {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .chat-input-container textarea {
+            flex-grow: 1;
+            border-radius: 20px;
+            padding: 10px 15px;
+        }
+        
+        .chat-input-container button {
+            border-radius: 20px;
+        }
+        
+        .chat-header {
+            border-bottom: 1px solid #dee2e6;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        /* Mobile responsiveness improvements */
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .header {
+                padding: 15px;
+            }
+            
+            .header h1 {
+                font-size: 1.5rem;
+            }
+            
+            .header p {
+                font-size: 0.9rem;
+            }
+            
+            .nav-buttons {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 5px;
+            }
+            
+            .header .btn {
+                margin: 5px 2px;
+                padding: 6px 10px;
+                font-size: 0.8rem;
+            }
+            
+            .chat-container {
+                height: 350px;
+            }
+            
+            .chat-input-container {
+                flex-direction: column;
+            }
+            
+            .chat-input-container textarea {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+            
+            .chat-input-container button {
+                width: 100%;
+            }
+            
+            .chat-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .chat-header button {
+                margin-top: 10px;
+            }
+            
+            .user-message .message-content,
+            .bot-message .message-content {
+                max-width: 90%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="bi bi-book"></i> A/L Physics Learning Assistant</h1>
+            <p>Your AI-powered study companion for Sri Lankan Advanced Level Physics</p>
+            <!-- Add these links to your navigation menu in index.html -->
+            <div class="mt-3 nav-buttons">
+                <a href="/practice" class="btn btn-outline-light me-2 mb-2 mb-md-0">
+                    <i class="bi bi-journal-check"></i> Practice
+                </a>
+                <a href="/exam_tips" class="btn btn-outline-light me-2 mb-2 mb-md-0">
+                    <i class="bi bi-lightbulb"></i> Exam Tips
+                </a>
+                <a href="/study_plan" class="btn btn-outline-light me-2 mb-2 mb-md-0">
+                    <i class="bi bi-calendar-check"></i> Study Plan
+                </a>
+                <a href="/short_notes" class="btn btn-outline-light me-2 mb-2 mb-md-0">
+                    <i class="bi bi-card-text"></i> Short Notes
+                </a>
+                <a href="/about" class="btn btn-outline-light me-2 mb-2 mb-md-0">
+                    <i class="bi bi-info-circle"></i> About
+                </a>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-4">
+                <div class="sidebar">
+                    <h4>Select Physics Topic</h4>
+                    <form id="physicsForm">
+                        <div class="mb-3">
+                            <label for="unit" class="form-label">Choose Unit</label>
+                            <select class="form-select" id="unit" name="unit" required>
+                                <option value="" selected disabled>Select a unit</option>
+                                {% for unit in units %}
+                                <option value="{{ unit }}">{{ unit }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="topic" class="form-label">Select Topic</label>
+                            <select class="form-select" id="topic" name="topic" required>
+                                <option value="All Topics">All Topics</option>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Select Mode</label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="mode" id="mode1" value="Learn Step-by-Step" checked>
+                                <label class="form-check-label" for="mode1">Learn Step-by-Step</label>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="language" class="form-label">Select Language</label>
+                            <select class="form-select" id="language" name="language">
+                                {% for language in languages %}
+                                <option value="{{ language }}">{{ language }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <button type="button" class="btn btn-primary w-100" id="viewUnitBtn">View Unit Content</button>
+                        </div>
+                        
+                        <div class="mb-3" id="unitContent" style="display: none;">
+                            <div class="card">
+                                <div class="card-header">Unit Content</div>
+                                <div class="card-body" id="unitContentBody">
+                                    <!-- Unit content will be displayed here -->
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <button type="button" class="btn btn-success w-100" id="startTeachingBtn">
+                                <i class="bi bi-play-fill"></i> Start Teaching
+                            </button>
+                            <button type="button" class="btn btn-danger w-100" id="clearChatBtn" style="display: none;">
+                                <i class="bi bi-trash"></i> Clear Chat
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="col-md-8">
+                <div class="content">
+                    <div id="standardMode">
+                        <h2 id="selectedUnit">Select a Unit</h2>
+                        <h4 id="selectedTopic">Select a Topic</h4>
+                        
+                        <div class="mb-3">
+                            <label for="user_query" class="form-label">Enter your specific question:</label>
+                            <textarea class="form-control" id="user_query" name="user_query" rows="4"></textarea>
+                        </div>
+                        
+                        <button type="button" class="btn btn-success w-100 w-md-auto" id="getHelpBtn">Get Help</button>
+                        
+                        <div class="loading" id="loading">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <p>Generating response...</p>
+                        </div>
+                        
+                        <div class="response-area" id="responseArea" style="display: none;">
+                            <h3>Response:</h3>
+                            <div id="responseContent"></div>
+                        </div>
+                    </div>
+                    
+                    <div id="chatMode" style="display: none;">
+                        <div class="chat-header">
+                            <h3 id="chatTitle">Learning Session</h3>
+                            <button type="button" class="btn btn-outline-secondary btn-sm" id="backToStandardBtn">
+                                <i class="bi bi-arrow-left"></i> Back
+                            </button>
+                        </div>
+                        
+                        <div class="chat-container" id="chatContainer">
+                            <!-- Chat messages will appear here -->
+                        </div>
+                        
+                        <div class="chat-input-container">
+                            <textarea class="form-control" id="chatInput" placeholder="Type your message here..." rows="2"></textarea>
+                            <button class="btn btn-primary" id="sendMessageBtn">
+                                <i class="bi bi-send"></i> Send
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>This app is designed to help Sri Lankan A/L students with Physics using AI.</p>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const unitSelect = document.getElementById('unit');
+            const topicSelect = document.getElementById('topic');
+            const viewUnitBtn = document.getElementById('viewUnitBtn');
+            const unitContent = document.getElementById('unitContent');
+            const unitContentBody = document.getElementById('unitContentBody');
+            const selectedUnit = document.getElementById('selectedUnit');
+            const selectedTopic = document.getElementById('selectedTopic');
+            const getHelpBtn = document.getElementById('getHelpBtn');
+            const loading = document.getElementById('loading');
+            const responseArea = document.getElementById('responseArea');
+            const responseContent = document.getElementById('responseContent');
+            
+            // Chat mode elements
+            const startTeachingBtn = document.getElementById('startTeachingBtn');
+            const clearChatBtn = document.getElementById('clearChatBtn');
+            const standardMode = document.getElementById('standardMode');
+            const chatMode = document.getElementById('chatMode');
+            const chatContainer = document.getElementById('chatContainer');
+            const chatInput = document.getElementById('chatInput');
+            const sendMessageBtn = document.getElementById('sendMessageBtn');
+            const chatTitle = document.getElementById('chatTitle');
+            const backToStandardBtn = document.getElementById('backToStandardBtn');
+            
+            // Update topics when unit changes
+            unitSelect.addEventListener('change', function() {
+                const unit = this.value;
+                selectedUnit.textContent = unit;
+                chatTitle.textContent = `Learning ${unit}`;
+                selectedTopic.textContent = 'All Topics';
+                
+                // Clear existing topics
+                topicSelect.innerHTML = '<option value="All Topics">All Topics</option>';
+                
+                // Get topics for selected unit
+                fetch('/get_topics', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams({
+                        'unit': unit
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.topics && data.topics.length > 0) {
+                        data.topics.forEach(topic => {
+                            const option = document.createElement('option');
+                            option.value = topic;
+                            option.textContent = topic;
+                            topicSelect.appendChild(option);
+                        });
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            });
+            
+            // Update selected topic
+            topicSelect.addEventListener('change', function() {
+                selectedTopic.textContent = this.value;
+            });
+            
+            // View unit content
+            viewUnitBtn.addEventListener('click', function() {
+                const unit = unitSelect.value;
+                if (!unit) {
+                    alert('Please select a unit first');
+                    return;
+                }
+                
+                fetch('/get_topics', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams({
+                        'unit': unit
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    unitContentBody.innerHTML = '';
+                    if (data.topics && data.topics.length > 0) {
+                        const ul = document.createElement('ul');
+                        data.topics.forEach(topic => {
+                            const li = document.createElement('li');
+                            li.textContent = topic;
+                            ul.appendChild(li);
+                        });
+                        unitContentBody.appendChild(ul);
+                        unitContent.style.display = 'block';
+                    } else {
+                        unitContentBody.textContent = 'No topics found for this unit.';
+                        unitContent.style.display = 'block';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    unitContentBody.textContent = 'Error loading topics.';
+                    unitContent.style.display = 'block';
+                });
+            });
+            
+            // Get help button
+            getHelpBtn.addEventListener('click', function() {
+                const unit = unitSelect.value;
+                const topic = topicSelect.value;
+                const mode = document.querySelector('input[name="mode"]:checked').value;
+                const language = document.getElementById('language').value;
+                const user_query = document.getElementById('user_query').value;
+                
+                if (!unit) {
+                    alert('Please select a unit');
+                    return;
+                }
+                
+                if (topic === 'All Topics' && !user_query) {
+                    alert('Please select a specific topic or enter a question');
+                    return;
+                }
+                
+                // Show loading
+                loading.style.display = 'block';
+                responseArea.style.display = 'none';
+                
+                // Send request to generate response
+                fetch('/generate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams({
+                        'unit': unit,
+                        'topic': topic,
+                        'mode': mode,
+                        'language': language,
+                        'user_query': user_query
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    loading.style.display = 'none';
+                    responseArea.style.display = 'block';
+                    
+                    if (data.error) {
+                        responseContent.innerHTML = `<div class="alert alert-danger">${data.error}</div>`;
+                        if (data.raw_response) {
+                            responseContent.innerHTML += `<pre>${JSON.stringify(data.raw_response, null, 2)}</pre>`;
+                        }
+                    } else if (data.response) {
+                        // Use marked.js to render markdown
+                        responseContent.innerHTML = marked.parse(data.response);
+                        // Re-render MathJax for mathematical formulas
+                        if (typeof MathJax !== 'undefined') {
+                            MathJax.typesetPromise([responseContent]).catch((err) => console.log('MathJax error:', err));
+                        }
+                    } else {
+                        responseContent.innerHTML = '<div class="alert alert-warning">No response received</div>';
+                    }
+                })
+                .catch(error => {
+                    loading.style.display = 'none';
+                    responseArea.style.display = 'block';
+                    responseContent.innerHTML = `<div class="alert alert-danger">Error: ${error.message}</div>`;
+                });
+            });
+            
+            // Start teaching button
+            startTeachingBtn.addEventListener('click', function() {
+                const unit = unitSelect.value;
+                const topic = topicSelect.value;
+                const language = document.getElementById('language').value;
+                
+                if (!unit) {
+                    alert('Please select a unit first');
+                    return;
+                }
+                
+                // Switch to chat mode
+                standardMode.style.display = 'none';
+                chatMode.style.display = 'block';
+                chatContainer.innerHTML = '';
+                clearChatBtn.style.display = 'inline-block';
+                
+                // Add system message
+                const topicText = topic !== "All Topics" ? `${topic} in ${unit}` : unit;
+                addSystemMessage(`Starting to teach ${topicText}...`);
+                
+                // Send request to start teaching
+                fetch('/start_teaching', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams({
+                        'unit': unit,
+                        'topic': topic,
+                        'language': language
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        addSystemMessage(`Error: ${data.error}`);
+                    } else if (data.response) {
+                        addBotMessage(data.response);
+                    } else {
+                        addSystemMessage('No response received');
+                    }
+                })
+                .catch(error => {
+                    addSystemMessage(`Error: ${error.message}`);
+                });
+            });
+            
+            // Back to standard mode button
+            backToStandardBtn.addEventListener('click', function() {
+                chatMode.style.display = 'none';
+                standardMode.style.display = 'block';
+                clearChatBtn.style.display = 'none';
+            });
+            
+            // Send message button
+            sendMessageBtn.addEventListener('click', function() {
+                sendMessage();
+            });
+            
+            // Send message on Enter key (but allow Shift+Enter for new lines)
+            chatInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    sendMessage();
+                }
+            });
+            
+            // Clear chat button
+            clearChatBtn.addEventListener('click', function() {
+                if (confirm('Are you sure you want to clear the chat history?')) {
+                    chatContainer.innerHTML = '';
+                    addSystemMessage('Chat history cleared');
+                    
+                    fetch('/clear_conversation', {
+                        method: 'POST'
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log('Conversation cleared:', data);
+                    })
+                    .catch(error => {
+                        console.error('Error clearing conversation:', error);
+                    });
+                }
+            });
+            
+            // Function to send a message
+            function sendMessage() {
+                const message = chatInput.value.trim();
+                if (!message) return;
+                
+                // Add user message to chat
+                addUserMessage(message);
+                
+                // Clear input
+                chatInput.value = '';
+                
+                // Get language
+                const language = document.getElementById('language').value;
+                
+                // Send message to server
+                fetch('/continue_conversation', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams({
+                        'message': message,
+                        'language': language
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        addSystemMessage(`Error: ${data.error}`);
+                    } else if (data.response) {
+                        addBotMessage(data.response);
+                    } else {                        addSystemMessage('No response received');
+                    }
+                })
+                .catch(error => {
+                    addSystemMessage(`Error: ${error.message}`);
+                });
+            }
+            
+            // Function to add a user message to the chat
+            function addUserMessage(message) {
+                const messageElement = document.createElement('div');
+                messageElement.className = 'chat-message user-message';
+                messageElement.innerHTML = `
+                    <div class="message-content">
+                        <p>${escapeHtml(message)}</p>
+                    </div>
+                `;
+                chatContainer.appendChild(messageElement);
+                scrollToBottom();
+            }
+            
+            // Function to add a bot message to the chat
+            function addBotMessage(message) {
+                const messageElement = document.createElement('div');
+                messageElement.className = 'chat-message bot-message';
+                messageElement.innerHTML = `
+                    <div class="message-content">
+                        ${marked.parse(message)}
+                    </div>
+                `;
+                chatContainer.appendChild(messageElement);
+                // Re-render MathJax for mathematical formulas
+                if (typeof MathJax !== 'undefined') {
+                    MathJax.typesetPromise([messageElement]).catch((err) => console.log('MathJax error:', err));
+                }
+                scrollToBottom();
+                
+                // Add syntax highlighting if needed
+                if (typeof hljs !== 'undefined') {
+                    document.querySelectorAll('pre code').forEach((block) => {
+                        hljs.highlightBlock(block);
+                    });
+                }
+            }
+            
+            // Function to add a system message to the chat
+            function addSystemMessage(message) {
+                const messageElement = document.createElement('div');
+                messageElement.className = 'chat-message system-message';
+                messageElement.innerHTML = `
+                    <div class="message-content">
+                        <p>${message}</p>
+                    </div>
+                `;
+                chatContainer.appendChild(messageElement);
+                scrollToBottom();
+            }
+            
+            // Function to scroll chat to bottom
+            function scrollToBottom() {
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+            }
+            
+            // Function to escape HTML
+            function escapeHtml(unsafe) {
+                return unsafe
+                    .replace(/&/g, "&amp;")
+                    .replace(/</g, "&lt;")
+                    .replace(/>/g, "&gt;")
+                    .replace(/"/g, "&quot;")
+                    .replace(/'/g, "&#039;");
+            }
+        });
+    </script>
+</body>
+</html>

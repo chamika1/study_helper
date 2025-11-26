@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exam Tips - A/L Physics Learning Assistant</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    
+    <!-- MathJax for rendering mathematical formulas -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            },
+            svg: {
+                fontCache: 'global'
+            }
+        };
+    </script>
+    
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background-color: #3498db;
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .sidebar {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .content {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            padding: 10px;
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        .loading {
+            text-align: center;
+            display: none;
+            margin: 20px 0;
+        }
+        .tip-card {
+            margin-bottom: 20px;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 0 5px 5px 0;
+        }
+        .nav-link {
+            color: #495057;
+        }
+        .nav-link.active {
+            font-weight: bold;
+            color: #3498db;
+        }
+        
+        /* Mobile responsiveness improvements */
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .header {
+                padding: 15px;
+            }
+            
+            .header h1 {
+                font-size: 1.5rem;
+            }
+            
+            .header p {
+                font-size: 0.9rem;
+            }
+            
+            .nav-buttons {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 5px;
+            }
+            
+            .header .btn {
+                margin: 5px 2px;
+                padding: 6px 10px;
+                font-size: 0.8rem;
+            }
+            
+            .tip-card {
+                padding: 10px;
+            }
+            
+            .form-label {
+                font-size: 0.9rem;
+            }
+            
+            .btn {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+            
+            .content {
+                padding: 15px;
+            }
+            
+            .sidebar {
+                margin-bottom: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="bi bi-lightbulb"></i> A/L Physics Exam Tips</h1>
+            <p>Strategic advice to excel in your A/L Physics examination</p>
+            <!-- Update the navigation buttons to have mobile-friendly classes -->
+            <div class="mt-3 nav-buttons">
+                <a href="/" class="btn btn-outline-light me-2 mb-2 mb-md-0">
+                    <i class="bi bi-house"></i> Home
+                </a>
+                <a href="/practice" class="btn btn-outline-light me-2 mb-2 mb-md-0">
+                    <i class="bi bi-journal-check"></i> Practice
+                </a>
+                <a href="/study_plan" class="btn btn-outline-light me-2 mb-2 mb-md-0">
+                    <i class="bi bi-calendar-check"></i> Study Plan
+                </a>
+                <a href="/short_notes" class="btn btn-outline-light mb-2 mb-md-0">
+                    <i class="bi bi-journal-text"></i> Short Notes
+                </a>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <div class="sidebar">
+                    <h4>Select Topic</h4>
+                    <form id="examTipsForm">
+                        <div class="mb-3">
+                            <label for="unit" class="form-label">Unit</label>
+                            <select class="form-select" id="unit" name="unit">
+                                <option value="">Select a unit</option>
+                                {% for unit in units %}
+                                <option value="{{ unit }}">{{ unit }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="topic" class="form-label">Topic</label>
+                            <select class="form-select" id="topic" name="topic" disabled>
+                                <option value="">Select a unit first</option>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="language" class="form-label">Language</label>
+                            <select class="form-select" id="language" name="language">
+                                {% for language in languages %}
+                                <option value="{{ language }}">{{ language }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="specificQuery" class="form-label">Specific Query (Optional)</label>
+                            <textarea class="form-control" id="specificQuery" name="user_query" rows="2" placeholder="E.g., How to solve numerical problems quickly?"></textarea>
+                        </div>
+                        
+                        <div class="text-center">
+                            <button type="button" class="btn btn-primary" id="getExamTipsBtn">
+                                <i class="bi bi-lightbulb"></i> Get Exam Tips
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="col-md-8">
+                <div class="content">
+                    <div class="loading" id="loading">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p>Generating exam tips...</p>
+                    </div>
+                    
+                    <div id="tipsContainer">
+                        <div class="text-center my-5">
+                            <i class="bi bi-lightbulb" style="font-size: 3rem; color: #3498db;"></i>
+                            <p class="lead mt-3">Select a topic and click "Get Exam Tips" to receive strategic advice for your A/L Physics exam.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>This app is designed to help Sri Lankan A/L students with Physics using AI.</p>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // DOM elements
+            const unitSelect = document.getElementById('unit');
+            const topicSelect = document.getElementById('topic');
+            const getExamTipsBtn = document.getElementById('getExamTipsBtn');
+            const loading = document.getElementById('loading');
+            const tipsContainer = document.getElementById('tipsContainer');
+            
+            // Load topics when unit is selected
+            unitSelect.addEventListener('change', function() {
+                const unit = this.value;
+                if (unit) {
+                    fetch('/get_topics', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                        body: `unit=${encodeURIComponent(unit)}`
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        topicSelect.innerHTML = '<option value="All Topics">All Topics</option>';
+                        data.topics.forEach(topic => {
+                            const option = document.createElement('option');
+                            option.value = topic;
+                            option.textContent = topic;
+                            topicSelect.appendChild(option);
+                        });
+                        topicSelect.disabled = false;
+                    });
+                } else {
+                    topicSelect.innerHTML = '<option value="">Select a unit first</option>';
+                    topicSelect.disabled = true;
+                }
+            });
+            
+            // Get exam tips
+            getExamTipsBtn.addEventListener('click', function() {
+                const unit = unitSelect.value;
+                const topic = topicSelect.value;
+                const language = document.getElementById('language').value;
+                const userQuery = document.getElementById('specificQuery').value;
+                
+                if (!unit || !topic) {
+                    alert('Please select both a unit and a topic');
+                    return;
+                }
+                
+                // Show loading
+                loading.style.display = 'block';
+                tipsContainer.innerHTML = '';
+                
+                // Prepare form data
+                const formData = new FormData();
+                formData.append('unit', unit);
+                formData.append('topic', topic);
+                formData.append('mode', 'Exam Tips');
+                formData.append('language', language);
+                if (userQuery) {
+                    formData.append('user_query', userQuery);
+                }
+                
+                // Send request
+                fetch('/generate', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    loading.style.display = 'none';
+                    
+                    if (data.error) {
+                        tipsContainer.innerHTML = `
+                            <div class="alert alert-danger">
+                                <h4>Error</h4>
+                                <p>${data.error}</p>
+                            </div>
+                        `;
+                        return;
+                    }
+                    
+                    // Process and display the response
+                    const responseHtml = marked.parse(data.response);
+                    tipsContainer.innerHTML = `
+                        <h3>Exam Tips: ${topic}</h3>
+                        <div class="tip-content mt-4">
+                            ${responseHtml}
+                        </div>
+                        <div class="text-center mt-4">
+                            <button type="button" class="btn btn-outline-primary" onclick="window.print()">
+                                <i class="bi bi-printer"></i> Print Tips
+                            </button>
+                        </div>
+                    `;
+                    // Re-render MathJax for mathematical formulas
+                    if (typeof MathJax !== 'undefined') {
+                        MathJax.typesetPromise([tipsContainer]).catch((err) => console.log('MathJax error:', err));
+                    }
+                })
+                .catch(error => {
+                    loading.style.display = 'none';
+                    tipsContainer.innerHTML = `
+                        <div class="alert alert-danger">
+                            <h4>Error</h4>
+                            <p>${error.message}</p>
+                        </div>
+                    `;
+                });
+            });
+        });
+    </script>
+</body>
+</html>
